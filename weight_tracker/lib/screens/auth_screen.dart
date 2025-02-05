@@ -151,6 +151,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ElevatedButton(
                   child: const Text(
                     'Sign Up',
+                    style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
                     showModalBottomSheet(
@@ -171,6 +172,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ElevatedButton(
                     child: const Text(
                       'Login',
+                      style: TextStyle(color: Colors.white),
                     ),
                     onPressed: () {
                       showModalBottomSheet(
