@@ -6,7 +6,6 @@ import '../providers/auth.dart';
 
 import '../models/http_exception.dart';
 
-import '../widgets/buttons/auth_elev_button.dart';
 import '../widgets/textfields/email_text_field.dart';
 import '../widgets/textfields/pw_text_field.dart';
 

@@ -1,68 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'screens/home_screen.dart';
+import 'screens/fbauth_screen.dart';
+import 'firebase_options.dart';
 
-import './providers/user_weight_info.dart';
-import './providers/auth.dart';
-
-import './screens/auth_screen.dart';
-import './screens/home_screen.dart';
-import './screens/dashboard_screen.dart';
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform); // Initialize Firebase
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<Auth>(
-          create: (_) => Auth(),
-        ),
-        ChangeNotifierProxyProvider<Auth, UserWeightInfo>(
-          create: (_) => UserWeightInfo('', '', []),
-          update: (ctx, auth, previous) => UserWeightInfo(
-              auth.token == null ? '' : auth.token!,
-              auth.userId == null ? '' : auth.userId!,
-              previous == null ? [] : previous.preMadeList),
-        ),
-      ],
-      child: Consumer<Auth>(
-        builder: (ctx, auth, _) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Witness My Fitness',
-          theme: ThemeData(
-            primaryColor: Colors.black,
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                textStyle: GoogleFonts.roboto(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                backgroundColor: Colors.red[800],
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 55,
-                  vertical: 20,
-                ),
-              ),
-            ),
-          ),
-          home: auth.isAuth ? DashboardScreen() : AuthScreen(),
-          routes: {
-            AuthScreen.routeName: (context) => AuthScreen(),
-            HomeScreen.routeName: (context) => HomeScreen(),
-            DashboardScreen.routeName: (context) => DashboardScreen(),
-          },
-        ),
-      ),
+    return MaterialApp(
+      title: 'Flutter Auth',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: AuthWrapper(), // Decides whether to show AuthScreen or HomeScreen
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator()); // Show loading
+        }
+        if (snapshot.hasData) {
+          return HomeScreen(); // If user is logged in, go to HomeScreen
+        }
+        return AuthScreen(); // Otherwise, go to AuthScreen
+      },
     );
   }
 }

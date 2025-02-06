@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:email_validator/email_validator.dart';
-
-import '../providers/auth.dart';
-
-import '../screens/dashboard_screen.dart';
 
 import '../widgets/auth_modal.dart';
 
