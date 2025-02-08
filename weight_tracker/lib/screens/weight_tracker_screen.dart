@@ -96,6 +96,7 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
       _fetchWeightEntries(); // Re-fetch entries after adding new one
       _weightController.clear();
       _dateController.clear();
+      Navigator.pop(context);
     }
   }
 
@@ -121,6 +122,53 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
             "${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}-${picked.year}";
       });
     }
+  }
+
+  void _showAddWeightDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add Weight'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _dateController,
+                  decoration: InputDecoration(
+                    labelText: 'Select Date',
+                    hintText: 'MM-DD-YYYY',
+                    prefixIcon: Icon(Icons.calendar_today, color: Colors.red),
+                  ),
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _weightController,
+                  decoration: InputDecoration(
+                    labelText: 'Weight',
+                    prefixIcon: Icon(Icons.monitor_weight, color: Colors.red),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: _addWeightEntry,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Logout the user
@@ -153,6 +201,11 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddWeightDialog,
+        backgroundColor: Colors.red,
+        child: Icon(Icons.add),
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -168,157 +221,79 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      // Date picker for selecting date
-                      TextField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                          labelText: 'Select Date',
-                          hintText: 'MM-DD-YYYY',
-                          prefixIcon:
-                              Icon(Icons.calendar_today, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                      ),
-                      SizedBox(height: 16),
-                      // Input field for weight
-                      TextField(
-                        controller: _weightController,
-                        decoration: InputDecoration(
-                          labelText: 'Weight',
-                          prefixIcon:
-                              Icon(Icons.monitor_weight, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _addWeightEntry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  'Add Entry',
-                  style: TextStyle(
-                    fontSize: 18,
+          child: ListView.builder(
+            itemCount: _weightEntries.length,
+            itemBuilder: (context, index) {
+              final entry = _weightEntries[index];
+              return Dismissible(
+                key: Key(entry['key']),
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 20),
+                  child: Icon(
+                    Icons.delete,
                     color: Colors.white,
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              // Display previous weight entries
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _weightEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = _weightEntries[index];
-                    return Dismissible(
-                      key: Key(entry['key']),
-                      background: Container(
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Confirm Delete'),
+                        content: Text(
+                            'Are you sure you want to delete this weight entry?'),
+                        actions: [
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: Text('Delete'),
+                            onPressed: () => Navigator.of(context).pop(true),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                onDismissed: (direction) {
+                  _deleteWeightEntry(entry['key']);
+                },
+                child: Card(
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    title: Text(
+                      'Date: ${entry['date']}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                         color: Colors.red,
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
                       ),
-                      direction: DismissDirection.endToStart,
-                      confirmDismiss: (direction) async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Confirm Delete'),
-                              content: Text(
-                                  'Are you sure you want to delete this weight entry?'),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancel'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                ),
-                                TextButton(
-                                  child: Text('Delete'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      onDismissed: (direction) {
-                        _deleteWeightEntry(entry['key']);
-                      },
-                      child: Card(
-                        elevation: 4,
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(16),
-                          title: Text(
-                            'Date: ${entry['date']}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'Weight: ${entry['weight']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.fitness_center,
-                            color: Colors.red,
-                            size: 32,
-                          ),
-                        ),
+                    ),
+                    subtitle: Text(
+                      'Weight: ${entry['weight']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
                       ),
-                    );
-                  },
+                    ),
+                    leading: Icon(
+                      Icons.fitness_center,
+                      color: Colors.red,
+                      size: 32,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

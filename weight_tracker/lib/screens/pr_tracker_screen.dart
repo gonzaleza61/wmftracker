@@ -54,12 +54,69 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
       _fetchPREntries();
       _workoutController.clear();
       _prController.clear();
+      Navigator.pop(context);
     }
   }
 
   void _deletePREntry(String key) async {
     await _databaseRef.child(key).remove();
     _fetchPREntries();
+  }
+
+  void _showAddPRDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add New PR'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _workoutController,
+                decoration: InputDecoration(
+                  labelText: 'Workout Name',
+                  prefixIcon: Icon(Icons.fitness_center, color: Colors.red),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: _prController,
+                decoration: InputDecoration(
+                  labelText: 'Personal Record',
+                  prefixIcon: Icon(Icons.stars, color: Colors.red),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: _addPREntry,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -84,6 +141,11 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddPRDialog,
+        backgroundColor: Colors.red,
+        child: Icon(Icons.add),
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -97,150 +159,79 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _workoutController,
-                        decoration: InputDecoration(
-                          labelText: 'Workout Name',
-                          prefixIcon:
-                              Icon(Icons.fitness_center, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      TextField(
-                        controller: _prController,
-                        decoration: InputDecoration(
-                          labelText: 'Personal Record',
-                          prefixIcon: Icon(Icons.stars, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _addPREntry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  'Add PR',
-                  style: TextStyle(
-                    fontSize: 18,
+          child: ListView.builder(
+            itemCount: _prEntries.length,
+            itemBuilder: (context, index) {
+              final entry = _prEntries[index];
+              return Dismissible(
+                key: Key(entry['key']),
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 20),
+                  child: Icon(
+                    Icons.delete,
                     color: Colors.white,
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _prEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = _prEntries[index];
-                    return Dismissible(
-                      key: Key(entry['key']),
-                      background: Container(
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Confirm Delete'),
+                        content: Text(
+                            'Are you sure you want to delete this PR entry?'),
+                        actions: [
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () => Navigator.of(context).pop(false),
+                          ),
+                          TextButton(
+                            child: Text('Delete'),
+                            onPressed: () => Navigator.of(context).pop(true),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                onDismissed: (direction) {
+                  _deletePREntry(entry['key']);
+                },
+                child: Card(
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    title: Text(
+                      entry["workout"],
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                         color: Colors.red,
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
                       ),
-                      direction: DismissDirection.endToStart,
-                      confirmDismiss: (direction) async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Confirm Delete'),
-                              content: Text(
-                                  'Are you sure you want to delete this PR entry?'),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancel'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                ),
-                                TextButton(
-                                  child: Text('Delete'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      onDismissed: (direction) {
-                        _deletePREntry(entry['key']);
-                      },
-                      child: Card(
-                        elevation: 4,
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(16),
-                          title: Text(
-                            entry["workout"],
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'PR: ${entry["pr"]}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          leading: Icon(
-                            Icons.emoji_events,
-                            color: Colors.red,
-                            size: 32,
-                          ),
-                        ),
+                    ),
+                    subtitle: Text(
+                      'PR: ${entry["pr"]}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
                       ),
-                    );
-                  },
+                    ),
+                    leading: Icon(
+                      Icons.emoji_events,
+                      color: Colors.red,
+                      size: 32,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

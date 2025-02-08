@@ -119,7 +119,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                               ),
                               obscureText: true,
-                              autofillHints: const [AutofillHints.password],
+                              autofillHints: isLogin
+                                  ? const [AutofillHints.password]
+                                  : const [AutofillHints.newPassword],
                             ),
                           ],
                         ),
