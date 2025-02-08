@@ -250,75 +250,78 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
                       itemCount: _workoutEntries.length,
                       itemBuilder: (context, index) {
                         final entry = _workoutEntries[index];
-                        return Dismissible(
-                          key: Key(entry['key']),
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20),
-                            child: Icon(Icons.delete, color: Colors.white),
-                          ),
-                          direction: DismissDirection.endToStart,
-                          confirmDismiss: (direction) async {
-                            return await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Confirm Delete'),
-                                  content: Text(
-                                      'Are you sure you want to delete this workout entry?'),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Cancel'),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Dismissible(
+                            key: Key(entry['key']),
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 20),
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                            direction: DismissDirection.endToStart,
+                            confirmDismiss: (direction) async {
+                              return await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Confirm Delete'),
+                                    content: Text(
+                                        'Are you sure you want to delete this workout entry?'),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Cancel'),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                      ),
+                                      TextButton(
+                                        child: Text('Delete'),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            onDismissed: (direction) {
+                              _deleteWorkoutEntry(entry['key']);
+                            },
+                            child: Card(
+                              elevation: 4,
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Date: ${entry['date']}',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red,
+                                      ),
                                     ),
-                                    TextButton(
-                                      child: Text('Delete'),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Muscles: ${entry['muscles']}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Workout: ${entry['workout']}',
+                                      style: TextStyle(fontSize: 16),
                                     ),
                                   ],
-                                );
-                              },
-                            );
-                          },
-                          onDismissed: (direction) {
-                            _deleteWorkoutEntry(entry['key']);
-                          },
-                          child: Card(
-                            elevation: 4,
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Date: ${entry['date']}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Muscles: ${entry['muscles']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Workout: ${entry['workout']}',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
