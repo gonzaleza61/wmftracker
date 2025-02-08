@@ -39,8 +39,17 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
       });
       // Sort entries by date
       entries.sort((a, b) {
-        DateTime dateA = DateTime.parse(a['date']);
-        DateTime dateB = DateTime.parse(b['date']);
+        // Parse date in MM-DD-YYYY format
+        List<String> partsA = a['date'].split('-');
+        List<String> partsB = b['date'].split('-');
+
+        DateTime dateA = DateTime(
+            int.parse(partsA[2]), // Year
+            int.parse(partsA[0]), // Month
+            int.parse(partsA[1]) // Day
+            );
+        DateTime dateB = DateTime(
+            int.parse(partsB[2]), int.parse(partsB[0]), int.parse(partsB[1]));
         return dateB.compareTo(dateA); // Most recent first
       });
       setState(() {
@@ -53,6 +62,31 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
   void _addWeightEntry() async {
     final weight = _weightController.text;
     final date = _dateController.text;
+
+    // Validate date format (MM-DD-YYYY)
+    RegExp dateFormat = RegExp(r'^\d{2}-\d{2}-\d{4}$');
+    if (!dateFormat.hasMatch(date)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please enter date in MM-DD-YYYY format')));
+      return;
+    }
+
+    // Further validate date parts
+    List<String> dateParts = date.split('-');
+    int month = int.parse(dateParts[0]);
+    int day = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+
+    if (month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31 ||
+        year < 2000 ||
+        year > 2101) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please enter a valid date')));
+      return;
+    }
 
     if (weight.isNotEmpty && date.isNotEmpty) {
       await _databaseRef.push().set({
@@ -206,12 +240,6 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
                   itemCount: _weightEntries.length,
                   itemBuilder: (context, index) {
                     final entry = _weightEntries[index];
-                    // Convert date format for display
-                    final dateParts = entry['date'].split('-');
-                    final formattedDate = dateParts.length == 3
-                        ? "${dateParts[1]}-${dateParts[2]}-${dateParts[0]}" // Convert YYYY-MM-DD to MM-DD-YYYY
-                        : entry[
-                            'date']; // Fallback to original if format is unexpected
                     return Dismissible(
                       key: Key(entry['key']),
                       background: Container(
@@ -260,7 +288,7 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
                         child: ListTile(
                           contentPadding: EdgeInsets.all(16),
                           title: Text(
-                            'Date: $formattedDate',
+                            'Date: ${entry['date']}',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

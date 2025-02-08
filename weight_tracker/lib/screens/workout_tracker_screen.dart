@@ -39,8 +39,15 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
         });
       });
       entries.sort((a, b) {
-        DateTime dateA = DateTime.parse(a['date']);
-        DateTime dateB = DateTime.parse(b['date']);
+        List<String> partsA = a['date'].split('-');
+        List<String> partsB = b['date'].split('-');
+        DateTime dateA = DateTime(
+            int.parse(partsA[2]), // Year
+            int.parse(partsA[0]), // Month
+            int.parse(partsA[1]) // Day
+            );
+        DateTime dateB = DateTime(
+            int.parse(partsB[2]), int.parse(partsB[0]), int.parse(partsB[1]));
         return dateB.compareTo(dateA);
       });
       setState(() {
@@ -105,7 +112,7 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
       setState(() {
         selectedDate = picked;
         _dateController.text =
-            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+            "${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}-${picked.year}";
       });
     }
   }
@@ -134,6 +141,8 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
         ],
       ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('lib/assets/WMFlogo.PNG'),
@@ -144,174 +153,180 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
             ),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                          labelText: 'Select Date',
-                          prefixIcon:
-                              Icon(Icons.calendar_today, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                      ),
-                      SizedBox(height: 16),
-                      TextField(
-                        controller: _musclesController,
-                        decoration: InputDecoration(
-                          labelText: 'Muscles Worked',
-                          prefixIcon:
-                              Icon(Icons.fitness_center, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      TextField(
-                        controller: _workoutController,
-                        decoration: InputDecoration(
-                          labelText: 'Workout Details',
-                          prefixIcon:
-                              Icon(Icons.description, color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                        maxLines: 5,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _addWorkoutEntry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Card(
+                  elevation: 8,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _dateController,
+                          decoration: InputDecoration(
+                            labelText: 'Select Date',
+                            hintText: 'MM-DD-YYYY',
+                            prefixIcon:
+                                Icon(Icons.calendar_today, color: Colors.red),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                          readOnly: true,
+                          onTap: () => _selectDate(context),
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: _musclesController,
+                          decoration: InputDecoration(
+                            labelText: 'Muscles Worked',
+                            prefixIcon:
+                                Icon(Icons.fitness_center, color: Colors.red),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: _workoutController,
+                          decoration: InputDecoration(
+                            labelText: 'Workout Details',
+                            prefixIcon:
+                                Icon(Icons.description, color: Colors.red),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                          maxLines: 5,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Add Workout',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _addWorkoutEntry,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Text(
+                    'Add Workout',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _workoutEntries.length,
-                  itemBuilder: (context, index) {
-                    final entry = _workoutEntries[index];
-                    return Dismissible(
-                      key: Key(entry['key']),
-                      background: Container(
-                        color: Colors.red,
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: Icon(Icons.delete, color: Colors.white),
-                      ),
-                      direction: DismissDirection.endToStart,
-                      confirmDismiss: (direction) async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Confirm Delete'),
-                              content: Text(
-                                  'Are you sure you want to delete this workout entry?'),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancel'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
+                SizedBox(height: 16),
+                Container(
+                  height: MediaQuery.of(context).size.height -
+                      400, // Adjust this value as needed
+                  child: ListView.builder(
+                    itemCount: _workoutEntries.length,
+                    itemBuilder: (context, index) {
+                      final entry = _workoutEntries[index];
+                      return Dismissible(
+                        key: Key(entry['key']),
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(right: 20),
+                          child: Icon(Icons.delete, color: Colors.white),
+                        ),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirm Delete'),
+                                content: Text(
+                                    'Are you sure you want to delete this workout entry?'),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                  ),
+                                  TextButton(
+                                    child: Text('Delete'),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        onDismissed: (direction) {
+                          _deleteWorkoutEntry(entry['key']);
+                        },
+                        child: Card(
+                          elevation: 4,
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Date: ${entry['date']}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
                                 ),
-                                TextButton(
-                                  child: Text('Delete'),
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(true),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Muscles: ${entry['muscles']}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Workout: ${entry['workout']}',
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ],
-                            );
-                          },
-                        );
-                      },
-                      onDismissed: (direction) {
-                        _deleteWorkoutEntry(entry['key']);
-                      },
-                      child: Card(
-                        elevation: 4,
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Date: ${entry['date']}',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Muscles: ${entry['muscles']}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Workout: ${entry['workout']}',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
