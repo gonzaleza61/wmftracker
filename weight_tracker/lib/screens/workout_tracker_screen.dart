@@ -114,7 +114,15 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workout Tracker'),
+        title: Text(
+          'Workout Tracker',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.red,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -125,113 +133,186 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _dateController,
-              decoration: InputDecoration(
-                labelText: 'Date',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () => _selectDate(context),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('lib/assets/WMFlogo.PNG'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(0.3),
+              BlendMode.dstATop,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-              ),
-              readOnly: true,
-            ),
-            TextField(
-              controller: _musclesController,
-              decoration: InputDecoration(
-                labelText: 'Muscles Worked',
-              ),
-            ),
-            TextField(
-              controller: _workoutController,
-              decoration: InputDecoration(
-                labelText: 'Workout Details',
-              ),
-              maxLines: 5,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _addWorkoutEntry,
-              child: Text('Add Workout'),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _workoutEntries.length,
-                itemBuilder: (context, index) {
-                  final entry = _workoutEntries[index];
-                  return Dismissible(
-                    key: Key(entry['key']),
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: EdgeInsets.only(right: 20),
-                      child: Icon(Icons.delete, color: Colors.white),
-                    ),
-                    direction: DismissDirection.endToStart,
-                    confirmDismiss: (direction) async {
-                      return await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Confirm Delete'),
-                            content: Text(
-                                'Are you sure you want to delete this workout entry?'),
-                            actions: [
-                              TextButton(
-                                child: Text('Cancel'),
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                              ),
-                              TextButton(
-                                child: Text('Delete'),
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    onDismissed: (direction) {
-                      _deleteWorkoutEntry(entry['key']);
-                    },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Date: ${entry['date']}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Muscles: ${entry['muscles']}',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Workout: ${entry['workout']}',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _dateController,
+                        decoration: InputDecoration(
+                          labelText: 'Select Date',
+                          prefixIcon:
+                              Icon(Icons.calendar_today, color: Colors.red),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () => _selectDate(context),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _musclesController,
+                        decoration: InputDecoration(
+                          labelText: 'Muscles Worked',
+                          prefixIcon:
+                              Icon(Icons.fitness_center, color: Colors.red),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _workoutController,
+                        decoration: InputDecoration(
+                          labelText: 'Workout Details',
+                          prefixIcon:
+                              Icon(Icons.description, color: Colors.red),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                        ),
+                        maxLines: 5,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _addWorkoutEntry,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: Text(
+                  'Add Workout',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _workoutEntries.length,
+                  itemBuilder: (context, index) {
+                    final entry = _workoutEntries[index];
+                    return Dismissible(
+                      key: Key(entry['key']),
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 20),
+                        child: Icon(Icons.delete, color: Colors.white),
+                      ),
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (direction) async {
+                        return await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Confirm Delete'),
+                              content: Text(
+                                  'Are you sure you want to delete this workout entry?'),
+                              actions: [
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                ),
+                                TextButton(
+                                  child: Text('Delete'),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      onDismissed: (direction) {
+                        _deleteWorkoutEntry(entry['key']);
+                      },
+                      child: Card(
+                        elevation: 4,
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Date: ${entry['date']}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Muscles: ${entry['muscles']}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Workout: ${entry['workout']}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
