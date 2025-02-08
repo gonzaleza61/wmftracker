@@ -6,6 +6,8 @@ import 'pr_tracker_screen.dart';
 import 'coming_soon_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.push(
       context,
@@ -65,6 +67,7 @@ class DashboardButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const DashboardButton({
+    super.key,
     required this.title,
     required this.icon,
     required this.onTap,

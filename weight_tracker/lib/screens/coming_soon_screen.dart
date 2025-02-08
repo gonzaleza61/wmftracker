@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ComingSoonScreen extends StatelessWidget {
+  const ComingSoonScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

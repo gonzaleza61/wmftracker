@@ -1,7 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class PRTrackerScreen extends StatelessWidget {
+class PRTrackerScreen extends StatefulWidget {
+  const PRTrackerScreen({super.key});
+
+  @override
+  State<PRTrackerScreen> createState() => _PRTrackerScreenState();
+}
+
+class _PRTrackerScreenState extends State<PRTrackerScreen> {
+  final _workoutController = TextEditingController();
+  final _prController = TextEditingController();
+  final _databaseRef = FirebaseDatabase.instance
+      .ref()
+      .child('prs')
+      .child(FirebaseAuth.instance.currentUser!.uid);
+  List<Map<String, dynamic>> _prEntries = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPREntries();
+  }
+
+  void _fetchPREntries() async {
+    final snapshot = await _databaseRef.get();
+    if (snapshot.exists) {
+      Map data = snapshot.value as Map;
+      List<Map<String, dynamic>> entries = [];
+      data.forEach((key, value) {
+        entries.add({
+          "key": key,
+          "workout": value["workout"],
+          "pr": value["pr"],
+        });
+      });
+      setState(() {
+        _prEntries = entries;
+      });
+    }
+  }
+
+  void _addPREntry() async {
+    final workout = _workoutController.text;
+    final pr = _prController.text;
+
+    if (workout.isNotEmpty && pr.isNotEmpty) {
+      await _databaseRef.push().set({
+        "workout": workout,
+        "pr": pr,
+      });
+      _fetchPREntries();
+      _workoutController.clear();
+      _prController.clear();
+    }
+  }
+
+  void _deletePREntry(String key) async {
+    await _databaseRef.child(key).remove();
+    _fetchPREntries();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +76,77 @@ class PRTrackerScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-          child: Text('PR Tracker Screen', style: TextStyle(fontSize: 22))),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _workoutController,
+              decoration: InputDecoration(labelText: 'Workout Name'),
+            ),
+            TextField(
+              controller: _prController,
+              decoration: InputDecoration(labelText: 'Personal Record'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _addPREntry,
+              child: Text('Add PR'),
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _prEntries.length,
+                itemBuilder: (context, index) {
+                  final entry = _prEntries[index];
+                  return Dismissible(
+                    key: Key(entry['key']),
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 20),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      _deletePREntry(entry['key']);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                entry["workout"],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'PR: ${entry["pr"]}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

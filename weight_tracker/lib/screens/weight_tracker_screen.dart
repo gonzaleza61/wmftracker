@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class WeightTrackerScreen extends StatefulWidget {
+  const WeightTrackerScreen({super.key});
+
   @override
   _WeightTrackerScreenState createState() => _WeightTrackerScreenState();
 }
@@ -30,9 +32,16 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
       List<Map<String, dynamic>> entries = [];
       data.forEach((key, value) {
         entries.add({
+          "key": key,
           "date": value["date"],
           "weight": value["weight"],
         });
+      });
+      // Sort entries by date
+      entries.sort((a, b) {
+        DateTime dateA = DateTime.parse(a['date']);
+        DateTime dateB = DateTime.parse(b['date']);
+        return dateB.compareTo(dateA); // Most recent first
       });
       setState(() {
         _weightEntries = entries;
@@ -56,6 +65,12 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
     }
   }
 
+  // Delete a weight entry from Firebase
+  void _deleteWeightEntry(String key) async {
+    await _databaseRef.child(key).remove();
+    _fetchWeightEntries(); // Re-fetch entries after deletion
+  }
+
   // Open the Date Picker
   void _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -64,12 +79,14 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        _dateController.text = "${selectedDate.toLocal()}"
-            .split(' ')[0]; // format date as yyyy-MM-dd
+        // Format date as MM-DD-YYYY
+        _dateController.text =
+            "${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}-${picked.year}";
       });
+    }
   }
 
   // Logout the user
@@ -100,7 +117,7 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
               controller: _dateController,
               decoration: InputDecoration(
                 labelText: 'Select Date',
-                hintText: 'YYYY-MM-DD',
+                hintText: 'MM-DD-YYYY',
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
                   onPressed: () => _selectDate(context),
@@ -126,9 +143,52 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
                 itemCount: _weightEntries.length,
                 itemBuilder: (context, index) {
                   final entry = _weightEntries[index];
-                  return ListTile(
-                    title: Text('Date: ${entry['date']}'),
-                    subtitle: Text('Weight: ${entry['weight']}'),
+                  // Convert date format for display
+                  final dateParts = entry['date'].split('-');
+                  final formattedDate = dateParts.length == 3
+                      ? "${dateParts[1]}-${dateParts[2]}-${dateParts[0]}" // Convert YYYY-MM-DD to MM-DD-YYYY
+                      : entry[
+                          'date']; // Fallback to original if format is unexpected
+                  return Dismissible(
+                    key: Key(entry['key']),
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 20),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      _deleteWeightEntry(entry['key']);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Date: $formattedDate',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Weight: ${entry['weight']}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
