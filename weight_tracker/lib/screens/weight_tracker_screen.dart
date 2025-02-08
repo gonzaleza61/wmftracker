@@ -132,6 +132,9 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final bool isLargeScreen = screenSize.width > 600;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -153,7 +156,9 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/WMFlogo.PNG'),
+            image: AssetImage(isLargeScreen
+                ? 'lib/assets/WMFlogoExtended.PNG'
+                : 'lib/assets/WMFlogo.PNG'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(0.3),

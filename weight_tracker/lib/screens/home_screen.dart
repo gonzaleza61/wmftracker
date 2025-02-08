@@ -17,6 +17,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final bool isLargeScreen = screenSize.width > 600;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -40,7 +43,9 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/WMFlogo.PNG'),
+            image: AssetImage(isLargeScreen
+                ? 'lib/assets/WMFlogoExtended.PNG'
+                : 'lib/assets/WMFlogo.PNG'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(0.3),
@@ -50,30 +55,82 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DashboardButton(
-                title: 'Weight Tracker',
-                icon: Icons.monitor_weight,
-                onTap: () => _navigateTo(context, WeightTrackerScreen()),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 800),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (isLargeScreen)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DashboardButton(
+                            title: 'Weight Tracker',
+                            icon: Icons.monitor_weight,
+                            onTap: () =>
+                                _navigateTo(context, WeightTrackerScreen()),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: DashboardButton(
+                            title: 'Workout Tracker',
+                            icon: Icons.fitness_center,
+                            onTap: () =>
+                                _navigateTo(context, WorkoutTrackerScreen()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (isLargeScreen) SizedBox(height: 20),
+                  if (isLargeScreen)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DashboardButton(
+                            title: 'PR Tracker',
+                            icon: Icons.assessment,
+                            onTap: () =>
+                                _navigateTo(context, PRTrackerScreen()),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: DashboardButton(
+                            title: 'Coming Soon',
+                            icon: Icons.hourglass_empty,
+                            onTap: () =>
+                                _navigateTo(context, ComingSoonScreen()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (!isLargeScreen) ...[
+                    DashboardButton(
+                      title: 'Weight Tracker',
+                      icon: Icons.monitor_weight,
+                      onTap: () => _navigateTo(context, WeightTrackerScreen()),
+                    ),
+                    DashboardButton(
+                      title: 'Workout Tracker',
+                      icon: Icons.fitness_center,
+                      onTap: () => _navigateTo(context, WorkoutTrackerScreen()),
+                    ),
+                    DashboardButton(
+                      title: 'PR Tracker',
+                      icon: Icons.assessment,
+                      onTap: () => _navigateTo(context, PRTrackerScreen()),
+                    ),
+                    DashboardButton(
+                      title: 'Coming Soon',
+                      icon: Icons.hourglass_empty,
+                      onTap: () => _navigateTo(context, ComingSoonScreen()),
+                    ),
+                  ],
+                ],
               ),
-              DashboardButton(
-                title: 'Workout Tracker',
-                icon: Icons.fitness_center,
-                onTap: () => _navigateTo(context, WorkoutTrackerScreen()),
-              ),
-              DashboardButton(
-                title: 'PR Tracker',
-                icon: Icons.assessment,
-                onTap: () => _navigateTo(context, PRTrackerScreen()),
-              ),
-              DashboardButton(
-                title: 'Coming Soon',
-                icon: Icons.hourglass_empty,
-                onTap: () => _navigateTo(context, ComingSoonScreen()),
-              ),
-            ],
+            ),
           ),
         ),
       ),
