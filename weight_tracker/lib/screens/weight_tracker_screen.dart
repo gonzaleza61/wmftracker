@@ -188,7 +188,7 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
                     onDismissed: (direction) {
                       _deleteWeightEntry(entry['key']);
                     },
-                    child: Container(
+                    child: SizedBox(
                       width: double.infinity,
                       child: Card(
                         child: Padding(

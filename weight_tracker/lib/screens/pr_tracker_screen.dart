@@ -139,7 +139,7 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
                     onDismissed: (direction) {
                       _deletePREntry(entry['key']);
                     },
-                    child: Container(
+                    child: SizedBox(
                       width: double.infinity,
                       child: Card(
                         child: Padding(
