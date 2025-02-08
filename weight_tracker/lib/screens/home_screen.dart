@@ -19,7 +19,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Text(
+          'Dashboard',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.red,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -29,32 +37,44 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DashboardButton(
-              title: 'Weight Tracker',
-              icon: Icons.monitor_weight,
-              onTap: () => _navigateTo(context, WeightTrackerScreen()),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('lib/assets/WMFlogo.PNG'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(0.3),
+              BlendMode.dstATop,
             ),
-            DashboardButton(
-              title: 'Workout Tracker',
-              icon: Icons.fitness_center,
-              onTap: () => _navigateTo(context, WorkoutTrackerScreen()),
-            ),
-            DashboardButton(
-              title: 'PR Tracker',
-              icon: Icons.assessment,
-              onTap: () => _navigateTo(context, PRTrackerScreen()),
-            ),
-            DashboardButton(
-              title: 'Coming Soon',
-              icon: Icons.hourglass_empty,
-              onTap: () => _navigateTo(context, ComingSoonScreen()),
-            ),
-          ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DashboardButton(
+                title: 'Weight Tracker',
+                icon: Icons.monitor_weight,
+                onTap: () => _navigateTo(context, WeightTrackerScreen()),
+              ),
+              DashboardButton(
+                title: 'Workout Tracker',
+                icon: Icons.fitness_center,
+                onTap: () => _navigateTo(context, WorkoutTrackerScreen()),
+              ),
+              DashboardButton(
+                title: 'PR Tracker',
+                icon: Icons.assessment,
+                onTap: () => _navigateTo(context, PRTrackerScreen()),
+              ),
+              DashboardButton(
+                title: 'Coming Soon',
+                icon: Icons.hourglass_empty,
+                onTap: () => _navigateTo(context, ComingSoonScreen()),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -77,19 +97,32 @@ class DashboardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: Size(double.infinity, 60),
-          textStyle: TextStyle(fontSize: 18),
+      child: Card(
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
-        onPressed: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 28),
-            SizedBox(width: 10),
-            Text(title),
-          ],
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            minimumSize: Size(double.infinity, 60),
+            textStyle: TextStyle(fontSize: 18, color: Colors.white),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+          onPressed: onTap,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 28, color: Colors.white),
+              SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );
