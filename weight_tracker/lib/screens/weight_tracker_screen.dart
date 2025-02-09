@@ -34,7 +34,7 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
         entries.add({
           "key": key,
           "date": value["date"],
-          "weight": value["weight"],
+          "weight": double.parse(value["weight"]),
         });
       });
       // Sort entries by date
@@ -225,6 +225,33 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
             itemCount: _weightEntries.length,
             itemBuilder: (context, index) {
               final entry = _weightEntries[index];
+              final previousWeight = index < _weightEntries.length - 1
+                  ? _weightEntries[index + 1]['weight']
+                  : null;
+              final weightDiff = previousWeight != null
+                  ? entry['weight'] - previousWeight
+                  : null;
+
+              Widget? weightChangeIndicator;
+              if (weightDiff != null) {
+                final isGain = weightDiff > 0;
+                weightChangeIndicator = Row(
+                  children: [
+                    Icon(
+                      isGain ? Icons.arrow_upward : Icons.arrow_downward,
+                      color: isGain ? Colors.red : Colors.green,
+                    ),
+                    Text(
+                      '${weightDiff.abs().toStringAsFixed(1)}',
+                      style: TextStyle(
+                        color: isGain ? Colors.red : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                );
+              }
+
               return Dismissible(
                 key: Key(entry['key']),
                 background: Container(
@@ -278,12 +305,19 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
                         color: Colors.red,
                       ),
                     ),
-                    subtitle: Text(
-                      'Weight: ${entry['weight']}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
+                    subtitle: Row(
+                      children: [
+                        Text(
+                          'Weight: ${entry['weight']}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        if (weightChangeIndicator != null)
+                          weightChangeIndicator,
+                      ],
                     ),
                     leading: Icon(
                       Icons.fitness_center,
