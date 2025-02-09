@@ -164,8 +164,8 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text('Add'),
               onPressed: _addWorkoutEntry,
+              child: Text('Add'),
             ),
           ],
         );

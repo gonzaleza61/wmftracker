@@ -162,8 +162,8 @@ class _WeightTrackerScreenState extends State<WeightTrackerScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text('Add'),
               onPressed: _addWeightEntry,
+              child: Text('Add'),
             ),
           ],
         );
