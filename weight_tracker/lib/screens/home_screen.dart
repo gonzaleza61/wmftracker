@@ -58,73 +58,84 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 800),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              constraints: BoxConstraints(maxWidth: 1000),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  AspectRatio(
-                    aspectRatio: 2,
-                    child: DashboardButton(
-                      title: 'Leaderboard',
-                      icon: Icons.leaderboard,
-                      onTap: () => _navigateTo(context, ComingSoonScreen()),
+                  Expanded(
+                    flex: 1,
+                    child: AspectRatio(
+                      aspectRatio: 0.5,
+                      child: DashboardButton(
+                        title: 'Leaderboard',
+                        icon: Icons.leaderboard,
+                        onTap: () => _navigateTo(context, ComingSoonScreen()),
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: DashboardButton(
-                            title: 'Weight\nTracker',
-                            icon: Icons.monitor_weight,
-                            onTap: () =>
-                                _navigateTo(context, WeightTrackerScreen()),
-                          ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: DashboardButton(
+                                  title: 'Weight\nTracker',
+                                  icon: Icons.monitor_weight,
+                                  onTap: () => _navigateTo(
+                                      context, WeightTrackerScreen()),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: DashboardButton(
+                                  title: 'Workout\nTracker',
+                                  icon: Icons.fitness_center,
+                                  onTap: () => _navigateTo(
+                                      context, WorkoutTrackerScreen()),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: DashboardButton(
-                            title: 'Workout\nTracker',
-                            icon: Icons.fitness_center,
-                            onTap: () =>
-                                _navigateTo(context, WorkoutTrackerScreen()),
-                          ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: DashboardButton(
+                                  title: 'PR\nTracker',
+                                  icon: Icons.assessment,
+                                  onTap: () =>
+                                      _navigateTo(context, PRTrackerScreen()),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: DashboardButton(
+                                  title: 'Exercise\nLibrary',
+                                  icon: Icons.menu_book,
+                                  onTap: () =>
+                                      _navigateTo(context, ComingSoonScreen()),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: DashboardButton(
-                            title: 'PR\nTracker',
-                            icon: Icons.assessment,
-                            onTap: () =>
-                                _navigateTo(context, PRTrackerScreen()),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: DashboardButton(
-                            title: 'Exercise\nLibrary',
-                            icon: Icons.menu_book,
-                            onTap: () =>
-                                _navigateTo(context, ComingSoonScreen()),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
