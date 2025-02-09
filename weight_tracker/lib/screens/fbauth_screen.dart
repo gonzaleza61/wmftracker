@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -11,32 +10,9 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLogin = true; // Toggle between Sign In and Sign Up
-
-  Future<void> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await _auth.signInWithCredential(credential);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error signing in with Google: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
 
   void authenticate(BuildContext context) async {
     try {
@@ -179,28 +155,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: signInWithGoogle,
-                      icon: Image.asset(
-                        'lib/assets/google_logo.png',
-                        height: 24,
-                      ),
-                      label: Text(
-                        "Sign in with Google",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
                         ),
                       ),
                     ),

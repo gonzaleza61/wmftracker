@@ -93,26 +93,30 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
   void _fetchPREntries() async {
     final snapshot = await _databaseRef.get();
     if (snapshot.exists) {
-      Map data = snapshot.value as Map;
-      List<Map<String, dynamic>> entries = [];
-      data.forEach((key, value) {
-        entries.add({
-          "key": key,
-          "workout": value["workout"],
-          "pr": value["pr"],
-          "bodyweight": value["bodyweight"],
-          "gender": value["gender"],
-          "lift": value["lift"],
-          "strengthLevel": value["strengthLevel"],
-        });
-      });
       setState(() {
-        _prEntries = entries;
+        _prEntries = [];
+        Map<dynamic, dynamic> data = snapshot.value as Map;
+        data.forEach((key, value) {
+          _prEntries.add({
+            "key": key,
+            "workout": value["workout"],
+            "pr": value["pr"],
+            "bodyweight": value["bodyweight"],
+            "gender": value["gender"],
+            "lift": value["lift"],
+            "strengthLevel": value["strengthLevel"],
+          });
+        });
       });
     }
   }
 
   void _showStrengthStandardsDialog() {
+    // Reset controllers and strength level
+    _prController.clear();
+    _bodyweightController.clear();
+    _strengthLevel = '';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -201,7 +205,9 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
               actions: [
                 TextButton(
                   child: Text('Cancel'),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
                 TextButton(
                   child: Text('Calculate'),
@@ -222,17 +228,27 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
                         _strengthLevel = strengthLevel;
                       });
 
-                      await _databaseRef.push().set({
-                        "workout": _selectedLift,
-                        "pr": maxLift.toString(),
-                        "bodyweight": bodyweight.toString(),
-                        "gender": _selectedGender,
-                        "lift": _selectedLift,
-                        "strengthLevel": strengthLevel,
-                      });
+                      try {
+                        await _databaseRef.push().set({
+                          "workout": _selectedLift,
+                          "pr": maxLift.toString(),
+                          "bodyweight": bodyweight.toString(),
+                          "gender": _selectedGender,
+                          "lift": _selectedLift,
+                          "strengthLevel": strengthLevel,
+                        });
 
-                      _fetchPREntries();
-                      Navigator.pop(context);
+                        _fetchPREntries();
+                        Navigator.of(context).pop();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Error saving entry: ${e.toString()}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     }
                   },
                 ),
@@ -244,14 +260,30 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
     );
   }
 
-  void _deletePREntry(String key) async {
-    await _databaseRef.child(key).remove();
-    _fetchPREntries();
+  Future<void> _deletePREntry(String key) async {
+    try {
+      await _databaseRef.child(key).remove();
+      _fetchPREntries();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Entry deleted successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting entry: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showDeleteConfirmation(String key) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirm Delete'),
@@ -259,12 +291,12 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
           actions: [
             TextButton(
               child: Text('Cancel'),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: Text('Delete'),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
                 _deletePREntry(key);
               },
             ),
