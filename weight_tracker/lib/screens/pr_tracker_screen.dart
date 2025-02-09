@@ -123,6 +123,7 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.red,
         title: Text(
           'PR Tracker',
           style: TextStyle(
@@ -131,10 +132,9 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.red,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
             },
@@ -163,71 +163,37 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
             itemCount: _prEntries.length,
             itemBuilder: (context, index) {
               final entry = _prEntries[index];
-              return Dismissible(
-                key: Key(entry['key']),
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: EdgeInsets.only(right: 20),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
+              return Card(
+                elevation: 4,
+                margin: EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (direction) async {
-                  return await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Confirm Delete'),
-                        content: Text(
-                            'Are you sure you want to delete this PR entry?'),
-                        actions: [
-                          TextButton(
-                            child: Text('Cancel'),
-                            onPressed: () => Navigator.of(context).pop(false),
-                          ),
-                          TextButton(
-                            child: Text('Delete'),
-                            onPressed: () => Navigator.of(context).pop(true),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                onDismissed: (direction) {
-                  _deletePREntry(entry['key']);
-                },
-                child: Card(
-                  elevation: 4,
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(16),
-                    title: Text(
-                      entry["workout"],
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'PR: ${entry["pr"]}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    leading: Icon(
-                      Icons.emoji_events,
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16),
+                  title: Text(
+                    entry["workout"],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                       color: Colors.red,
-                      size: 32,
                     ),
+                  ),
+                  subtitle: Text(
+                    'PR: ${entry["pr"]}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  leading: Icon(
+                    Icons.emoji_events,
+                    color: Colors.red,
+                    size: 32,
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _deletePREntry(entry['key']),
                   ),
                 ),
               );

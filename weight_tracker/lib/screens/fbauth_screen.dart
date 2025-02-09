@@ -46,15 +46,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          isLogin ? "Sign In" : "Sign Up",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.white,
       ),
       body: Container(
         decoration: BoxDecoration(

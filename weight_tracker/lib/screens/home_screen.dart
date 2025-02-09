@@ -22,18 +22,19 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Dashboard',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        backgroundColor: Colors.white,
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Image.asset(
+            'lib/assets/WMFlogo.PNG',
+            fit: BoxFit.contain,
+            width: 60,
+            height: 60,
           ),
         ),
-        backgroundColor: Colors.red,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.red),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
             },
@@ -61,78 +62,102 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (isLargeScreen)
-                    Row(
-                      children: [
-                        Expanded(
+                  AspectRatio(
+                    aspectRatio: 2,
+                    child: DashboardButton(
+                      title: 'Leaderboard',
+                      icon: Icons.leaderboard,
+                      onTap: () => _navigateTo(context, ComingSoonScreen()),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AspectRatio(
+                          aspectRatio: 1,
                           child: DashboardButton(
-                            title: 'Weight Tracker',
+                            title: 'Weight\nTracker',
                             icon: Icons.monitor_weight,
                             onTap: () =>
                                 _navigateTo(context, WeightTrackerScreen()),
                           ),
                         ),
-                        SizedBox(width: 20),
-                        Expanded(
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: AspectRatio(
+                          aspectRatio: 1,
                           child: DashboardButton(
-                            title: 'Workout Tracker',
+                            title: 'Workout\nTracker',
                             icon: Icons.fitness_center,
                             onTap: () =>
                                 _navigateTo(context, WorkoutTrackerScreen()),
                           ),
                         ),
-                      ],
-                    ),
-                  if (isLargeScreen) SizedBox(height: 20),
-                  if (isLargeScreen)
-                    Row(
-                      children: [
-                        Expanded(
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AspectRatio(
+                          aspectRatio: 1,
                           child: DashboardButton(
-                            title: 'PR Tracker',
+                            title: 'PR\nTracker',
                             icon: Icons.assessment,
                             onTap: () =>
                                 _navigateTo(context, PRTrackerScreen()),
                           ),
                         ),
-                        SizedBox(width: 20),
-                        Expanded(
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: AspectRatio(
+                          aspectRatio: 1,
                           child: DashboardButton(
-                            title: 'Coming Soon',
-                            icon: Icons.hourglass_empty,
+                            title: 'Exercise\nLibrary',
+                            icon: Icons.menu_book,
                             onTap: () =>
                                 _navigateTo(context, ComingSoonScreen()),
                           ),
                         ),
-                      ],
-                    ),
-                  if (!isLargeScreen) ...[
-                    DashboardButton(
-                      title: 'Weight Tracker',
-                      icon: Icons.monitor_weight,
-                      onTap: () => _navigateTo(context, WeightTrackerScreen()),
-                    ),
-                    DashboardButton(
-                      title: 'Workout Tracker',
-                      icon: Icons.fitness_center,
-                      onTap: () => _navigateTo(context, WorkoutTrackerScreen()),
-                    ),
-                    DashboardButton(
-                      title: 'PR Tracker',
-                      icon: Icons.assessment,
-                      onTap: () => _navigateTo(context, PRTrackerScreen()),
-                    ),
-                    DashboardButton(
-                      title: 'Coming Soon',
-                      icon: Icons.hourglass_empty,
-                      onTap: () => _navigateTo(context, ComingSoonScreen()),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.red,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Community',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (index) {
+          // Handle navigation when implemented
+        },
       ),
     );
   }
@@ -152,34 +177,34 @@ class DashboardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Card(
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          padding: EdgeInsets.all(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            minimumSize: Size(double.infinity, 60),
-            textStyle: TextStyle(fontSize: 18, color: Colors.white),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          onPressed: onTap,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 28, color: Colors.white),
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(color: Colors.white),
+        onPressed: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.white),
+            SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
