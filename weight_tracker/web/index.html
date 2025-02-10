@@ -63,8 +63,65 @@
     </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
+    <style>
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .loading-spinner {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        animation: collapse 2s ease-in-out infinite;
+      }
+      .spinner-circle {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid #ff0000;
+        border-radius: 50%;
+        animation: rotate 2s linear infinite;
+      }
+      .spinner-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #ff0000;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes collapse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.8);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div class="loading-container">
+      <div class="loading-spinner">
+        <div class="spinner-circle"></div>
+        <div class="spinner-text">WITNESS MY FITNESS</div>
+      </div>
+    </div>
     <script>
       window.addEventListener("load", function (ev) {
         // Download main.dart.js
@@ -78,6 +135,7 @@
             return engineInitializer.initializeEngine();
           })
           .then(function (appRunner) {
+            document.querySelector(".loading-container").style.display = "none";
             return appRunner.runApp();
           });
       });
