@@ -74,43 +74,38 @@
         position: relative;
         width: 200px;
         height: 200px;
-        animation: collapse 2s ease-in-out infinite;
-      }
-      .spinner-circle {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border: 4px solid #ff0000;
-        border-radius: 50%;
-        animation: rotate 2s linear infinite;
+        perspective: 1000px;
       }
       .spinner-text {
         position: absolute;
         width: 100%;
-        text-align: center;
-        top: 50%;
+        height: 100%;
+        animation: rotate 4s linear infinite;
+        transform-style: preserve-3d;
+      }
+      .letter {
+        position: absolute;
         left: 50%;
-        transform: translate(-50%, -50%);
-        color: #ff0000;
+        top: 50%;
+        transform-origin: 0 -80px;
         font-family: Arial, sans-serif;
         font-size: 16px;
         font-weight: bold;
+        transform: rotate(180deg) scaleX(-1);
+      }
+      .letter.fitness {
+        color: #ff0000;
+      }
+      .letter.witness,
+      .letter.my {
+        color: #000000;
       }
       @keyframes rotate {
         0% {
-          transform: rotate(0deg);
+          transform: rotateY(0deg);
         }
         100% {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes collapse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(0.8);
+          transform: rotateY(360deg);
         }
       }
     </style>
@@ -118,8 +113,24 @@
   <body>
     <div class="loading-container">
       <div class="loading-spinner">
-        <div class="spinner-circle"></div>
-        <div class="spinner-text">WITNESS MY FITNESS</div>
+        <div class="spinner-text">
+          <script>
+            const text = "WITNESS·MY·FITNESS";
+            const container = document.querySelector(".spinner-text");
+            const letters = text.split("");
+            letters.forEach((letter, i) => {
+              const span = document.createElement("span");
+              span.className = `letter ${
+                i < 8 ? "witness" : i < 11 ? "my" : "fitness"
+              }`;
+              span.textContent = letter;
+              span.style.transform = `rotate(${
+                i * (360 / letters.length)
+              }deg) rotate(180deg) scaleX(-1)`;
+              container.appendChild(span);
+            });
+          </script>
+        </div>
       </div>
     </div>
     <script>
