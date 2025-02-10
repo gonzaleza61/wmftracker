@@ -67,11 +67,59 @@ class HomeScreen extends StatelessWidget {
                           flex: 1,
                           child: AspectRatio(
                             aspectRatio: 0.5,
-                            child: DashboardButton(
-                              title: 'Leaderboard',
-                              icon: Icons.leaderboard,
-                              onTap: () =>
-                                  _navigateTo(context, ComingSoonScreen()),
+                            child: Card(
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'lib/assets/compportrait.jpg'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(15),
+                                    onTap: () => _navigateTo(
+                                        context, ComingSoonScreen()),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.leaderboard,
+                                            size: 40, color: Colors.white),
+                                        SizedBox(height: 8),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.black.withOpacity(0.6),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            'LEADERBOARD',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -89,10 +137,12 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'Weight\nTracker',
+                                            title: 'WEIGHT\nTRACKER',
                                             icon: Icons.monitor_weight,
                                             onTap: () => _navigateTo(
                                                 context, WeightTrackerScreen()),
+                                            fontSize: 14,
+                                            iconSize: 30,
                                           ),
                                         ),
                                       ),
@@ -101,10 +151,12 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'Workout\nTracker',
+                                            title: 'WORKOUT\nTRACKER',
                                             icon: Icons.fitness_center,
                                             onTap: () => _navigateTo(context,
                                                 WorkoutTrackerScreen()),
+                                            fontSize: 14,
+                                            iconSize: 30,
                                           ),
                                         ),
                                       ),
@@ -119,10 +171,12 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'PR\nTracker',
+                                            title: 'PR\nTRACKER',
                                             icon: Icons.assessment,
                                             onTap: () => _navigateTo(
                                                 context, PRTrackerScreen()),
+                                            fontSize: 14,
+                                            iconSize: 30,
                                           ),
                                         ),
                                       ),
@@ -131,10 +185,12 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'Exercise\nLibrary',
+                                            title: 'EXERCISE\nLIBRARY',
                                             icon: Icons.menu_book,
                                             onTap: () => _navigateTo(
                                                 context, ComingSoonScreen()),
+                                            fontSize: 14,
+                                            iconSize: 30,
                                           ),
                                         ),
                                       ),
@@ -151,11 +207,56 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         AspectRatio(
                           aspectRatio: 3,
-                          child: DashboardButton(
-                            title: 'Leaderboard',
-                            icon: Icons.leaderboard,
-                            onTap: () =>
-                                _navigateTo(context, ComingSoonScreen()),
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                  image: AssetImage('lib/assets/comp.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(15),
+                                  onTap: () =>
+                                      _navigateTo(context, ComingSoonScreen()),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.leaderboard,
+                                          size: 40, color: Colors.white),
+                                      SizedBox(height: 8),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.6),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          'LEADERBOARD',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(height: 20),
@@ -168,19 +269,23 @@ class HomeScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'Weight\nTracker',
+                                        title: 'WEIGHT\nTRACKER',
                                         icon: Icons.monitor_weight,
                                         onTap: () => _navigateTo(
                                             context, WeightTrackerScreen()),
+                                        fontSize: 14,
+                                        iconSize: 30,
                                       ),
                                     ),
                                     SizedBox(width: 20),
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'Workout\nTracker',
+                                        title: 'WORKOUT\nTRACKER',
                                         icon: Icons.fitness_center,
                                         onTap: () => _navigateTo(
                                             context, WorkoutTrackerScreen()),
+                                        fontSize: 14,
+                                        iconSize: 30,
                                       ),
                                     ),
                                   ],
@@ -192,19 +297,23 @@ class HomeScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'PR\nTracker',
+                                        title: 'PR\nTRACKER',
                                         icon: Icons.assessment,
                                         onTap: () => _navigateTo(
                                             context, PRTrackerScreen()),
+                                        fontSize: 14,
+                                        iconSize: 30,
                                       ),
                                     ),
                                     SizedBox(width: 20),
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'Exercise\nLibrary',
+                                        title: 'EXERCISE\nLIBRARY',
                                         icon: Icons.menu_book,
                                         onTap: () => _navigateTo(
                                             context, ComingSoonScreen()),
+                                        fontSize: 14,
+                                        iconSize: 30,
                                       ),
                                     ),
                                   ],
@@ -254,12 +363,16 @@ class DashboardButton extends StatelessWidget {
   final String title;
   final IconData icon;
   final VoidCallback onTap;
+  final double fontSize;
+  final double iconSize;
 
   const DashboardButton({
     super.key,
     required this.title,
     required this.icon,
     required this.onTap,
+    this.fontSize = 18,
+    this.iconSize = 40,
   });
 
   @override
@@ -281,14 +394,16 @@ class DashboardButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: Colors.white),
+            Icon(icon, size: iconSize, color: Colors.white),
             SizedBox(height: 8),
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               ),
             ),
           ],
