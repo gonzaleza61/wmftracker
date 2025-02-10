@@ -64,73 +64,67 @@
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
     <style>
+      body {
+        background-color: black;
+      }
       .loading-container {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
       }
-      .loading-spinner {
-        position: relative;
-        width: 200px;
-        height: 200px;
-        perspective: 1000px;
-      }
-      .spinner-text {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        animation: rotate 4s linear infinite;
-        transform-style: preserve-3d;
-      }
-      .letter {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform-origin: 0 -80px;
+      .loading-text {
         font-family: Arial, sans-serif;
-        font-size: 16px;
+        font-size: 48px;
         font-weight: bold;
-        transform: rotate(180deg) scaleX(-1);
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
       }
-      .letter.fitness {
+      .wm {
+        color: #ffffff;
+      }
+      .f {
         color: #ff0000;
       }
-      .letter.witness,
-      .letter.my {
-        color: #000000;
+      .loading-bar {
+        width: 200px;
+        height: 4px;
+        background-color: #333;
+        border-radius: 2px;
+        overflow: hidden;
+        position: relative;
       }
-      @keyframes rotate {
+      .loading-bar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 50%;
+        background-color: #ff0000;
+        animation: loading 1.5s infinite ease-in-out;
+      }
+      @keyframes loading {
         0% {
-          transform: rotateY(0deg);
+          transform: translateX(-100%);
+        }
+        50% {
+          transform: translateX(100%);
         }
         100% {
-          transform: rotateY(360deg);
+          transform: translateX(-100%);
         }
       }
     </style>
   </head>
   <body>
     <div class="loading-container">
-      <div class="loading-spinner">
-        <div class="spinner-text">
-          <script>
-            const text = "WITNESS·MY·FITNESS";
-            const container = document.querySelector(".spinner-text");
-            const letters = text.split("");
-            letters.forEach((letter, i) => {
-              const span = document.createElement("span");
-              span.className = `letter ${
-                i < 8 ? "witness" : i < 11 ? "my" : "fitness"
-              }`;
-              span.textContent = letter;
-              span.style.transform = `rotate(${
-                i * (360 / letters.length)
-              }deg) rotate(180deg) scaleX(-1)`;
-              container.appendChild(span);
-            });
-          </script>
+      <div>
+        <div class="loading-text">
+          <span class="wm">WM</span><span class="f">F</span>
         </div>
+        <div class="loading-bar"></div>
       </div>
     </div>
     <script>
