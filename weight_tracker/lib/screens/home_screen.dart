@@ -4,6 +4,7 @@ import 'weight_tracker_screen.dart';
 import 'workout_tracker_screen.dart';
 import 'pr_tracker_screen.dart';
 import 'coming_soon_screen.dart';
+import 'ai_trainer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -185,10 +186,10 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'EXERCISE\nLIBRARY',
+                                            title: 'AI\nTRAINER',
                                             icon: Icons.menu_book,
                                             onTap: () => _navigateTo(
-                                                context, ComingSoonScreen()),
+                                                context, AITrainerScreen()),
                                             fontSize: 14,
                                             iconSize: 30,
                                           ),
@@ -308,10 +309,10 @@ class HomeScreen extends StatelessWidget {
                                     SizedBox(width: 20),
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'EXERCISE\nLIBRARY',
+                                        title: 'AI\nTRAINER',
                                         icon: Icons.menu_book,
                                         onTap: () => _navigateTo(
-                                            context, ComingSoonScreen()),
+                                            context, AITrainerScreen()),
                                         fontSize: 14,
                                         iconSize: 30,
                                       ),

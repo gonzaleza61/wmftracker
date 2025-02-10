@@ -324,6 +324,7 @@ class _PRTrackerScreenState extends State<PRTrackerScreen> {
             icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           ),
         ],
