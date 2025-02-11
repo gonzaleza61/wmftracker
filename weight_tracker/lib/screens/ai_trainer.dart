@@ -9,7 +9,7 @@ class AITrainerScreen extends StatefulWidget {
 
 class _AITrainerScreenState extends State<AITrainerScreen> {
   final TextEditingController _promptController = TextEditingController();
-  String _response = '';
+  List<ChecklistItem> _checklistItems = [];
   bool _isLoading = false;
   final ChatGPTService _chatGPT = ChatGPTService(Secrets.openAIKey);
 
@@ -19,13 +19,27 @@ class _AITrainerScreenState extends State<AITrainerScreen> {
     });
 
     try {
+      // Add error handling for missing API key
+      if (Secrets.openAIKey.isEmpty) {
+        throw Exception('OpenAI API key not configured');
+      }
+
       final response = await _chatGPT.generateResponse(_promptController.text);
+      if (response.isEmpty) {
+        throw Exception('Empty response from AI service');
+      }
+
+      // Split response into checklist items
+      final items =
+          response.split('\n').where((line) => line.trim().isNotEmpty).toList();
       setState(() {
-        _response = response;
+        _checklistItems =
+            items.map((item) => ChecklistItem(text: item)).toList();
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(
+            content: Text('Error connecting to AI service: ${e.toString()}')),
       );
     } finally {
       setState(() {
@@ -65,8 +79,20 @@ class _AITrainerScreenState extends State<AITrainerScreen> {
             ),
             SizedBox(height: 16),
             Expanded(
-              child: SingleChildScrollView(
-                child: Text(_response),
+              child: ListView.builder(
+                itemCount: _checklistItems.length,
+                itemBuilder: (context, index) {
+                  return CheckboxListTile(
+                    title: Text(_checklistItems[index].text),
+                    value: _checklistItems[index].isChecked,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _checklistItems[index].isChecked = value ?? false;
+                      });
+                    },
+                    activeColor: Colors.red,
+                  );
+                },
               ),
             ),
           ],
@@ -74,4 +100,14 @@ class _AITrainerScreenState extends State<AITrainerScreen> {
       ),
     );
   }
+}
+
+class ChecklistItem {
+  String text;
+  bool isChecked;
+
+  ChecklistItem({
+    required this.text,
+    this.isChecked = false,
+  });
 }

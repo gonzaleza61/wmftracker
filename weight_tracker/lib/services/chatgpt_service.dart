@@ -28,14 +28,12 @@ class ChatGPTService {
         }),
       );
 
+      final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
         return data['choices'][0]['message']['content'];
-      } else {
-        print('Error response: ${response.body}');
-        throw Exception(
-            'Failed to generate response. Status: ${response.statusCode}');
       }
+      throw Exception(
+          'Failed to generate response. Status: ${response.statusCode}');
     } catch (e) {
       print('Error in ChatGPT service: $e');
       throw Exception('Failed to communicate with AI service: $e');
