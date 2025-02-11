@@ -48,7 +48,6 @@ dependencies:
   google_sign_in: ^6.2.2
   firebase_database: ^11.3.2
   flutter_dotenv: ^5.0.2
-  cloud_functions: ^4.6.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
