@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Auth',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      title: 'WMF',
+      theme: ThemeData(primarySwatch: Colors.red),
       home: AuthWrapper(), // Decides whether to show AuthScreen or HomeScreen
     );
   }

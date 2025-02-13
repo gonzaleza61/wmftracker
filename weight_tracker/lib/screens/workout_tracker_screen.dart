@@ -102,6 +102,86 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     }
   }
 
+  Future<void> _editWorkoutEntry(Map<String, dynamic> entry) async {
+    _dateController.text = entry['date'];
+    _musclesController.text = entry['muscles'];
+    _workoutController.text = entry['workout'];
+    selectedDate = DateTime(
+      int.parse(entry['date'].split('-')[2]), // Year
+      int.parse(entry['date'].split('-')[0]), // Month
+      int.parse(entry['date'].split('-')[1]), // Day
+    );
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Workout'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _dateController,
+                  decoration: InputDecoration(
+                    labelText: 'Select Date',
+                    hintText: 'MM-DD-YYYY',
+                    prefixIcon: Icon(Icons.calendar_today, color: Colors.red),
+                  ),
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _musclesController,
+                  decoration: InputDecoration(
+                    labelText: 'Muscles Worked',
+                    prefixIcon: Icon(Icons.fitness_center, color: Colors.red),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _workoutController,
+                  decoration: InputDecoration(
+                    labelText: 'Workout Details',
+                    prefixIcon: Icon(Icons.description, color: Colors.red),
+                  ),
+                  maxLines: 5,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                _dateController.clear();
+                _musclesController.clear();
+                _workoutController.clear();
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              onPressed: () async {
+                await _databaseRef.child(entry['key']).update({
+                  "date": _dateController.text,
+                  "muscles": _musclesController.text,
+                  "workout": _workoutController.text,
+                });
+                _fetchWorkoutEntries();
+                _dateController.clear();
+                _musclesController.clear();
+                _workoutController.clear();
+                Navigator.pop(context);
+              },
+              child: Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -270,13 +350,22 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Date: ${entry['date']}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.red,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Date: ${entry['date']}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Colors.red),
+                              onPressed: () => _editWorkoutEntry(entry),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 8),
                         Text(
