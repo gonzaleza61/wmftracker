@@ -5,6 +5,7 @@ import 'workout_tracker_screen.dart';
 import 'pr_tracker_screen.dart';
 import 'coming_soon_screen.dart';
 import 'ai_trainer.dart';
+import 'schedule_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -353,7 +354,12 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
         onTap: (index) {
-          // Handle navigation when implemented
+          switch (index) {
+            case 1: // Schedule tab
+              _navigateTo(context, ScheduleScreen());
+              break;
+            // ... other cases
+          }
         },
       ),
     );

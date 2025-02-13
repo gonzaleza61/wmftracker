@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
 
 class WorkoutTrackerScreen extends StatefulWidget {
   const WorkoutTrackerScreen({super.key});
@@ -18,6 +19,16 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
   DateTime selectedDate = DateTime.now();
 
   List<Map<String, dynamic>> _workoutEntries = [];
+
+  String _getDayOfWeek(String dateStr) {
+    List<String> parts = dateStr.split('-');
+    DateTime date = DateTime(
+      int.parse(parts[2]), // Year
+      int.parse(parts[0]), // Month
+      int.parse(parts[1]), // Day
+    );
+    return DateFormat('EEEE').format(date); // Returns full day name
+  }
 
   @override
   void initState() {
@@ -353,13 +364,26 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Date: ${entry['date']}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getDayOfWeek(entry['date']),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                Text(
+                                  'Date: ${entry['date']}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
                             ),
                             IconButton(
                               icon: Icon(Icons.edit, color: Colors.red),
