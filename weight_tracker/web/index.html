@@ -14,31 +14,6 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-    <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "firebase/app";
-      import { getAnalytics } from "firebase/analytics";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
-
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      const firebaseConfig = {
-        apiKey: "AIzaSyCS-QlCs72ATlJprtrN2remxKsS0RPPW2Q",
-        authDomain: "wmf-weight-tracker.firebaseapp.com",
-        databaseURL: "https://wmf-weight-tracker-default-rtdb.firebaseio.com",
-        projectId: "wmf-weight-tracker",
-        storageBucket: "wmf-weight-tracker.firebasestorage.app",
-        messagingSenderId: "602883492301",
-        appId: "1:602883492301:web:63317877bdbd64f2ed1c84",
-        measurementId: "G-LG3QYGH6SH",
-      };
-
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-    </script>
-
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
@@ -61,6 +36,14 @@
       // The value below is injected by flutter build, do not touch.
       var serviceWorkerVersion = null;
     </script>
+    <!-- Add Firebase Core first -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Add Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <!-- Add Firebase Functions -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+    <!-- Add Firebase Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
     <style>
@@ -145,5 +128,20 @@
           });
       });
     </script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCS-QlCs72ATlJprtrN2remxKsS0RPPW2Q",
+        authDomain: "wmf-weight-tracker.firebaseapp.com",
+        databaseURL: "https://wmf-weight-tracker-default-rtdb.firebaseio.com",
+        projectId: "wmf-weight-tracker",
+        storageBucket: "wmf-weight-tracker.firebasestorage.app",
+        messagingSenderId: "602883492301",
+        appId: "1:602883492301:web:63317877bdbd64f2ed1c84",
+        measurementId: "G-LG3QYGH6SH",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const functions = firebase.functions();
+    </script>
+    <script src="main.dart.js" type="application/javascript"></script>
   </body>
 </html>

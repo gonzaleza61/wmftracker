@@ -1,1 +1,71 @@
-{"hosting":{"public":"build/web","ignore":["firebase.json","**/.*","**/node_modules/**"],"rewrites":[{"source":"**","destination":"/index.html"}]},"flutter":{"platforms":{"android":{"default":{"projectId":"wmf-weight-tracker","appId":"1:602883492301:android:88c04a7067e90cffed1c84","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"wmf-weight-tracker","configurations":{"android":"1:602883492301:android:88c04a7067e90cffed1c84","ios":"1:602883492301:ios:a6e325afd31e3d49ed1c84","macos":"1:602883492301:ios:a6e325afd31e3d49ed1c84","web":"1:602883492301:web:63317877bdbd64f2ed1c84","windows":"1:602883492301:web:63317877bdbd64f2ed1c84"}}},"ios":{"default":{"projectId":"wmf-weight-tracker","appId":"1:602883492301:ios:a6e325afd31e3d49ed1c84","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"wmf-weight-tracker","appId":"1:602883492301:ios:a6e325afd31e3d49ed1c84","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}}}}}
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "wmf-weight-tracker",
+          "appId": "1:602883492301:android:88c04a7067e90cffed1c84",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "wmf-weight-tracker",
+          "configurations": {
+            "android": "1:602883492301:android:88c04a7067e90cffed1c84",
+            "ios": "1:602883492301:ios:a6e325afd31e3d49ed1c84",
+            "macos": "1:602883492301:ios:a6e325afd31e3d49ed1c84",
+            "web": "1:602883492301:web:63317877bdbd64f2ed1c84",
+            "windows": "1:602883492301:web:63317877bdbd64f2ed1c84"
+          }
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "wmf-weight-tracker",
+          "appId": "1:602883492301:ios:a6e325afd31e3d49ed1c84",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "wmf-weight-tracker",
+          "appId": "1:602883492301:ios:a6e325afd31e3d49ed1c84",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}
