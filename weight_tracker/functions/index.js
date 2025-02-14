@@ -119,6 +119,7 @@ exports.generateAIResponse = onCall(
           },
           { role: "user", content: prompt.trim() },
         ],
+        stream: true,
       });
 
       return { response: completion.choices[0].message.content };
