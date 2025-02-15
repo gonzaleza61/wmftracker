@@ -272,7 +272,7 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Workout Tracker',
+          'Workout Log',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

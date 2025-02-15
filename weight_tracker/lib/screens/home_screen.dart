@@ -153,7 +153,7 @@ class HomeScreen extends StatelessWidget {
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: DashboardButton(
-                                            title: 'WORKOUT\nTRACKER',
+                                            title: 'WORKOUT\nLOG',
                                             icon: Icons.fitness_center,
                                             onTap: () => _navigateTo(context,
                                                 WorkoutTrackerScreen()),
@@ -282,7 +282,7 @@ class HomeScreen extends StatelessWidget {
                                     SizedBox(width: 20),
                                     Expanded(
                                       child: DashboardButton(
-                                        title: 'WORKOUT\nTRACKER',
+                                        title: 'WORKOUT\nLOG',
                                         icon: Icons.fitness_center,
                                         onTap: () => _navigateTo(
                                             context, WorkoutTrackerScreen()),

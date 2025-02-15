@@ -169,7 +169,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Workouts for ${selectedDateStr}',
+              'Workouts for $selectedDateStr',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -212,8 +212,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddWorkoutDialog(context, _selectedDay),
-        child: Icon(Icons.add),
         backgroundColor: Colors.red,
+        child: Icon(Icons.add),
       ),
     );
   }

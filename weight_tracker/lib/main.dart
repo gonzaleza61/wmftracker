@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:cloud_functions/cloud_functions.dart';
 import 'screens/home_screen.dart';
 import 'screens/fbauth_screen.dart';
 import 'firebase_options.dart';
