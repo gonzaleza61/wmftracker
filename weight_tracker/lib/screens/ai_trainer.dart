@@ -86,11 +86,23 @@ class AITrainerScreenState extends State<AITrainerScreen> {
               ),
             TextField(
               controller: _promptController,
+              maxLines: 4,
               decoration: InputDecoration(
-                labelText: 'Ask your fitness question',
+                hintText: 'Ask me anything about fitness...',
                 border: OutlineInputBorder(),
+                suffixIcon: _promptController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          _promptController.clear();
+                          setState(() {});
+                        },
+                      )
+                    : null,
               ),
-              maxLines: 3,
+              onChanged: (text) {
+                setState(() {});
+              },
             ),
             SizedBox(height: 16),
             ElevatedButton(
