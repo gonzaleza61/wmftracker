@@ -7,8 +7,30 @@ import 'coming_soon_screen.dart';
 import 'ai_trainer.dart';
 import 'schedule_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    WeightTrackerScreen(),
+    PRTrackerScreen(),
+    ScheduleScreen(),
+    AITrainerScreen(),
+    ComingSoonScreen(featureName: 'Community'),
+    ComingSoonScreen(featureName: 'Profile'),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.push(
@@ -88,12 +110,14 @@ class HomeScreen extends StatelessWidget {
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(15),
                                     onTap: () => _navigateTo(
-                                        context, ComingSoonScreen()),
+                                        context,
+                                        ComingSoonScreen(
+                                            featureName: 'Community')),
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.leaderboard,
+                                        Icon(Icons.timer_outlined,
                                             size: 40, color: Colors.white),
                                         SizedBox(height: 8),
                                         Container(
@@ -108,7 +132,7 @@ class HomeScreen extends StatelessWidget {
                                                 BorderRadius.circular(20),
                                           ),
                                           child: Text(
-                                            'LEADERBOARD',
+                                            'WORKOUT OF THE WEEK',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 18,
@@ -226,12 +250,14 @@ class HomeScreen extends StatelessWidget {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(15),
-                                  onTap: () =>
-                                      _navigateTo(context, ComingSoonScreen()),
+                                  onTap: () => _navigateTo(
+                                      context,
+                                      ComingSoonScreen(
+                                          featureName: 'Community')),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.leaderboard,
+                                      Icon(Icons.timer_outlined,
                                           size: 40, color: Colors.white),
                                       SizedBox(height: 8),
                                       Container(
@@ -245,7 +271,7 @@ class HomeScreen extends StatelessWidget {
                                               BorderRadius.circular(20),
                                         ),
                                         child: Text(
-                                          'LEADERBOARD',
+                                          'WORKOUT OF THE WEEK',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 18,
@@ -331,18 +357,22 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.monitor_weight),
+            label: 'Weight',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'PRs',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.psychology),
+            label: 'AI Trainer',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
@@ -353,14 +383,11 @@ class HomeScreen extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-        onTap: (index) {
-          switch (index) {
-            case 1: // Schedule tab
-              _navigateTo(context, ScheduleScreen());
-              break;
-            // ... other cases
-          }
-        },
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed, // This ensures all items are shown
       ),
     );
   }

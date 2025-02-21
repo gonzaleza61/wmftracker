@@ -2,25 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ComingSoonScreen extends StatelessWidget {
-  const ComingSoonScreen({super.key});
+  final String featureName;
+
+  const ComingSoonScreen({
+    super.key,
+    required this.featureName,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Coming Soon'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-          ),
-        ],
+        title: Text('$featureName'),
+        backgroundColor: Colors.red,
       ),
       body: Center(
-          child: Text('This feature is coming soon!',
-              style: TextStyle(fontSize: 22))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.upcoming,
+              size: 80,
+              color: Colors.red,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Coming Soon!',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            SizedBox(height: 8),
+            Text(
+              '$featureName features are under development',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
