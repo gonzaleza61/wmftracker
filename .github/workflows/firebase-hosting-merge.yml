@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./weight_tracker # Set default working directory for all run steps
+        working-directory: ./weight_tracker
 
     steps:
       - uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
       # Setup Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.9" # Specify your Flutter version
+          flutter-version: "3.19.0" # Updated to latest stable version
           channel: "stable"
 
       # Get Flutter dependencies
@@ -35,4 +35,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_WMF_WEIGHT_TRACKER }}"
           channelId: live
           projectId: wmf-weight-tracker
-          entryPoint: ./weight_tracker # Specify Firebase configuration directory
+          entryPoint: ./weight_tracker
