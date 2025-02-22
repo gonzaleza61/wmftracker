@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'WMF',
       theme: ThemeData(primarySwatch: Colors.red),
-      home: MainScreen(), // Change this line
+      home: AuthWrapper(),
     );
   }
 }
@@ -53,12 +53,12 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); // Show loading
+          return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasData) {
-          return HomeScreen(); // If user is logged in, go to HomeScreen
+          return MainScreen();
         }
-        return AuthScreen(); // Otherwise, go to AuthScreen
+        return AuthScreen();
       },
     );
   }

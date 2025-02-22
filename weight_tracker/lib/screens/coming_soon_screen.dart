@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
 import 'schedule_screen.dart';
-import '../widgets/bottom_nav_bar.dart';
 
 class ComingSoonScreen extends StatelessWidget {
   final String featureName;
@@ -54,7 +53,6 @@ class ComingSoonScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentIndex: _currentIndex),
     );
   }
 }

@@ -216,7 +216,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         backgroundColor: Colors.red,
         child: Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavBar(currentIndex: 1),
     );
   }
 
