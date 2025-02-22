@@ -9,6 +9,10 @@ name: Deploy to Firebase Hosting on merge
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./weight_tracker # Set default working directory for all run steps
+
     steps:
       - uses: actions/checkout@v3
 
@@ -31,3 +35,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_WMF_WEIGHT_TRACKER }}"
           channelId: live
           projectId: wmf-weight-tracker
+          entryPoint: ./weight_tracker # Specify Firebase configuration directory
