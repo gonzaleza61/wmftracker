@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -77,45 +78,52 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                labelText: "Email",
-                                prefixIcon:
-                                    Icon(Icons.email, color: Colors.red),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                        child: AutofillGroup(
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  labelText: "Email",
+                                  prefixIcon:
+                                      Icon(Icons.email, color: Colors.red),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.red),
-                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                onEditingComplete: () =>
+                                    TextInput.finishAutofillContext(),
                               ),
-                              keyboardType: TextInputType.emailAddress,
-                              autofillHints: const [AutofillHints.email],
-                            ),
-                            SizedBox(height: 16),
-                            TextField(
-                              controller: passwordController,
-                              decoration: InputDecoration(
-                                labelText: "Password",
-                                prefixIcon: Icon(Icons.lock, color: Colors.red),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: passwordController,
+                                decoration: InputDecoration(
+                                  labelText: "Password",
+                                  prefixIcon:
+                                      Icon(Icons.lock, color: Colors.red),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.red),
-                                ),
+                                obscureText: true,
+                                autofillHints: isLogin
+                                    ? const [AutofillHints.password]
+                                    : const [AutofillHints.newPassword],
+                                onEditingComplete: () =>
+                                    TextInput.finishAutofillContext(),
                               ),
-                              obscureText: true,
-                              autofillHints: isLogin
-                                  ? const [AutofillHints.password]
-                                  : const [AutofillHints.newPassword],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
