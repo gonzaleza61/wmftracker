@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:async';
+import '../widgets/bottom_nav_bar.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -215,6 +216,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         backgroundColor: Colors.red,
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 1),
     );
   }
 
