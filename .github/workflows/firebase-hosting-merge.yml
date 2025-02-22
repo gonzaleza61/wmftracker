@@ -19,8 +19,13 @@ jobs:
       # Setup Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.0" # Updated to match the suggestion
+          flutter-version: "3.29.0"
           channel: "stable"
+
+      # Create .env file
+      - name: Create .env file
+        run: |
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
 
       # Get Flutter dependencies
       - run: flutter pub get
