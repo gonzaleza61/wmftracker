@@ -6,6 +6,7 @@ import 'screens/home_screen.dart';
 import 'screens/fbauth_screen.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'WMF',
       theme: ThemeData(primarySwatch: Colors.red),
-      home: AuthWrapper(), // Decides whether to show AuthScreen or HomeScreen
+      home: MainScreen(), // Change this line
     );
   }
 }
