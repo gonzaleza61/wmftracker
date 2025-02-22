@@ -20,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _goalController;
 
   bool _isLoading = true;
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -86,6 +87,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Widget _buildDisplayTile({
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, color: Colors.red),
+        title: Text(title),
+        subtitle: Text(value.isEmpty ? 'Not set' : value),
+        trailing: _isEditing ? Icon(Icons.edit) : null,
+      ),
+    );
+  }
+
+  Widget _buildEditField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    int? maxLines,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.red),
+        border: OutlineInputBorder(),
+      ),
+      keyboardType: keyboardType,
+      maxLines: maxLines ?? 1,
+      validator: (value) =>
+          value?.isEmpty ?? true ? 'Please enter $label' : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -102,6 +139,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text('Profile'),
         backgroundColor: Colors.red,
+        actions: [
+          IconButton(
+            icon: Icon(_isEditing ? Icons.save : Icons.edit),
+            onPressed: () {
+              if (_isEditing) {
+                if (_formKey.currentState!.validate()) {
+                  _saveProfile();
+                  setState(() => _isEditing = false);
+                }
+              } else {
+                setState(() => _isEditing = true);
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -109,57 +161,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Please enter your name' : null,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _ageController,
-                decoration: InputDecoration(
-                  labelText: 'Age',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Please enter your age' : null,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _heightController,
-                decoration: InputDecoration(
-                  labelText: 'Height',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Please enter your height' : null,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                controller: _goalController,
-                decoration: InputDecoration(
-                  labelText: 'Fitness Goal',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                validator: (value) => value?.isEmpty ?? true
-                    ? 'Please enter your fitness goal'
-                    : null,
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.red.shade100,
+                child: Icon(Icons.person, size: 50, color: Colors.red),
               ),
               SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 12),
+              if (_isEditing) ...[
+                _buildEditField(
+                  controller: _nameController,
+                  label: 'Name',
+                  icon: Icons.person,
                 ),
-                child: Text('Save Profile'),
-              ),
+                SizedBox(height: 16),
+                _buildEditField(
+                  controller: _ageController,
+                  label: 'Age',
+                  icon: Icons.calendar_today,
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 16),
+                _buildEditField(
+                  controller: _heightController,
+                  label: 'Height',
+                  icon: Icons.height,
+                ),
+                SizedBox(height: 16),
+                _buildEditField(
+                  controller: _goalController,
+                  label: 'Fitness Goal',
+                  icon: Icons.flag,
+                  maxLines: 3,
+                ),
+              ] else ...[
+                _buildDisplayTile(
+                  title: 'Name',
+                  value: _nameController.text,
+                  icon: Icons.person,
+                ),
+                _buildDisplayTile(
+                  title: 'Age',
+                  value: _ageController.text,
+                  icon: Icons.calendar_today,
+                ),
+                _buildDisplayTile(
+                  title: 'Height',
+                  value: _heightController.text,
+                  icon: Icons.height,
+                ),
+                _buildDisplayTile(
+                  title: 'Fitness Goal',
+                  value: _goalController.text,
+                  icon: Icons.flag,
+                ),
+              ],
             ],
           ),
         ),
