@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'schedule_screen.dart';
-import 'coming_soon_screen.dart';
+import 'trainers_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,8 +17,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
     ScheduleScreen(),
-    ComingSoonScreen(featureName: 'Community'),
-    ComingSoonScreen(featureName: 'Profile'),
+    TrainersScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -45,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
-            label: 'Community',
+            label: 'Trainers',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
