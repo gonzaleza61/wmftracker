@@ -81,7 +81,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: AutofillGroup(
                           child: Column(
                             children: [
-                              TextField(
+                              TextFormField(
                                 controller: emailController,
                                 decoration: InputDecoration(
                                   labelText: "Email",
@@ -96,12 +96,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
-                                autofillHints: const [AutofillHints.email],
-                                onEditingComplete: () =>
-                                    TextInput.finishAutofillContext(),
+                                textInputAction: TextInputAction.next,
+                                autofillHints: const [
+                                  AutofillHints.username,
+                                  AutofillHints.email
+                                ],
                               ),
                               SizedBox(height: 16),
-                              TextField(
+                              TextFormField(
                                 controller: passwordController,
                                 decoration: InputDecoration(
                                   labelText: "Password",
@@ -116,11 +118,13 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                 ),
                                 obscureText: true,
+                                textInputAction: TextInputAction.done,
                                 autofillHints: isLogin
                                     ? const [AutofillHints.password]
                                     : const [AutofillHints.newPassword],
-                                onEditingComplete: () =>
-                                    TextInput.finishAutofillContext(),
+                                onFieldSubmitted: (_) =>
+                                    TextInput.finishAutofillContext(
+                                        shouldSave: true),
                               ),
                             ],
                           ),
