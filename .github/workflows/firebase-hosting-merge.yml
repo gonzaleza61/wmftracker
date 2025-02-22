@@ -19,7 +19,7 @@ jobs:
       # Setup Flutter
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.29.0" # Updated to latest stable version
+          flutter-version: "3.29.0" # Updated to match the suggestion
           channel: "stable"
 
       # Get Flutter dependencies
