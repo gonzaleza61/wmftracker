@@ -19,6 +19,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final _databaseRef = FirebaseDatabase.instance
       .ref("users/${FirebaseAuth.instance.currentUser!.uid}/workoutEntries");
 
+  // Add muscle color mapping
+  final Map<String, Color> muscleColors = {
+    'Shoulders': Colors.blue,
+    'Triceps': Colors.green,
+    'Biceps': Colors.purple,
+    'Back': Colors.orange,
+    'Legs': Colors.yellow,
+    'Chest': Colors.red,
+    'Abs': Colors.teal,
+    'Cardio': Colors.pink,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +84,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     return DateFormat('EEEE').format(date);
   }
 
+  List<Color> _getEventColors(DateTime day) {
+    List<WorkoutEvent> events = _getEventsForDay(day);
+    List<Color> colors = [];
+
+    for (var event in events) {
+      List<String> muscles = event.title.split(', ');
+      for (var muscle in muscles) {
+        if (muscleColors.containsKey(muscle)) {
+          colors.add(muscleColors[muscle]!);
+        }
+      }
+    }
+    return colors;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,6 +127,30 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 _calendarFormat = format;
               });
             },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                if (events.isEmpty) return null;
+
+                List<Color> colors = _getEventColors(date);
+                return Positioned(
+                  bottom: 1,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: colors
+                        .map((color) => Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 1),
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: color,
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                );
+              },
+            ),
           ),
           Divider(thickness: 1),
           Padding(
@@ -122,26 +173,51 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               itemCount: _allWorkouts.length,
               itemBuilder: (context, index) {
                 final workout = _allWorkouts[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: 4.0,
-                  ),
-                  child: ListTile(
-                    title: Text(
-                      _getDayOfWeek(workout.dateTime),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '${workout.date}\n${workout.title}',
-                    ),
-                  ),
-                );
+                return _buildWorkoutListTile(workout);
               },
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Update WorkoutEvent list tile to show colored dots
+  Widget _buildWorkoutListTile(WorkoutEvent workout) {
+    List<String> muscles = workout.title.split(', ');
+    return ListTile(
+      title: Text(
+        _getDayOfWeek(workout.dateTime),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.red,
+        ),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(workout.date),
+          Row(
+            children: muscles.map((muscle) {
+              if (!muscleColors.containsKey(muscle)) return Container();
+              return Container(
+                margin: EdgeInsets.only(right: 4),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: muscleColors[muscle],
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Text(muscle),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
