@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'dart:async';
+import 'package:intl/intl.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -12,10 +12,12 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  Map<String, List<WorkoutEvent>> _workouts = {};
-  StreamSubscription? _workoutsSubscription;
+  Map<DateTime, List<WorkoutEvent>> _workouts = {};
+  List<WorkoutEvent> _allWorkouts = [];
   DateTime _selectedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
+  final _databaseRef = FirebaseDatabase.instance
+      .ref("users/${FirebaseAuth.instance.currentUser!.uid}/workoutEntries");
 
   @override
   void initState() {
@@ -23,132 +25,68 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     _loadWorkouts();
   }
 
-  @override
-  void dispose() {
-    _workoutsSubscription?.cancel();
-    super.dispose();
-  }
+  void _loadWorkouts() async {
+    final snapshot = await _databaseRef.get();
+    if (snapshot.exists) {
+      final data = snapshot.value as Map;
+      Map<DateTime, List<WorkoutEvent>> workouts = {};
+      List<WorkoutEvent> allWorkouts = [];
 
-  void _deleteWorkout(String date, String workoutId) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
+      data.forEach((key, value) {
+        final List<String> dateParts = value['date'].toString().split('-');
+        final DateTime date = DateTime(
+          int.parse(dateParts[2]), // year
+          int.parse(dateParts[0]), // month
+          int.parse(dateParts[1]), // day
+        );
 
-    final ref = FirebaseDatabase.instance
-        .ref()
-        .child('users')
-        .child(userId)
-        .child('workouts')
-        .child(date);
+        final event = WorkoutEvent(
+          id: key,
+          title: value['muscles'],
+          date: value['date'],
+          dateTime: date,
+        );
 
-    // First remove the specific workout
-    ref.child(workoutId).remove().then((_) {
-      // Then check if this was the last workout for this date
-      ref.get().then((snapshot) {
-        if (!snapshot.exists || snapshot.children.isEmpty) {
-          // If no workouts left, remove the entire date node
-          ref.remove();
+        if (!workouts.containsKey(date)) {
+          workouts[date] = [];
         }
+        workouts[date]?.add(event);
+        allWorkouts.add(event);
       });
-    });
 
-    // Update local state immediately
-    setState(() {
-      final dateWorkouts = _workouts[date] ?? [];
-      dateWorkouts.removeWhere((workout) => workout.id == workoutId);
+      // Sort all workouts by date (most recent first)
+      allWorkouts.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-      if (dateWorkouts.isEmpty) {
-        _workouts.remove(date);
-      } else {
-        _workouts[date] = dateWorkouts;
-      }
-    });
+      setState(() {
+        _workouts = workouts;
+        _allWorkouts = allWorkouts;
+      });
+    }
   }
 
-  void _loadWorkouts() {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
-
-    _workoutsSubscription?.cancel();
-    _workoutsSubscription = FirebaseDatabase.instance
-        .ref()
-        .child('users')
-        .child(userId)
-        .child('workouts')
-        .onValue
-        .listen((event) {
-      if (!mounted) return;
-      if (!event.snapshot.exists) return;
-
-      try {
-        final data = event.snapshot.value as Map<dynamic, dynamic>;
-        final Map<String, List<WorkoutEvent>> newWorkouts = {};
-
-        data.forEach((dateStr, workouts) {
-          if (workouts is Map) {
-            final workoutList = <WorkoutEvent>[];
-            workouts.forEach((key, value) {
-              if (value is Map) {
-                workoutList.add(WorkoutEvent(
-                  id: key,
-                  title: value['title']?.toString() ?? '',
-                  date: dateStr.toString(),
-                ));
-              }
-            });
-            if (workoutList.isNotEmpty) {
-              newWorkouts[dateStr.toString()] = workoutList;
-            }
-          }
-        });
-
-        setState(() {
-          _workouts = newWorkouts;
-        });
-      } catch (e) {
-        // Handle error silently or show user feedback if needed
-      }
-    });
+  List<WorkoutEvent> _getEventsForDay(DateTime day) {
+    return _workouts[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
-  void _addWorkout(String title, DateTime selectedDate) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
-
-    final dateStr = selectedDate.toString().split(' ')[0];
-
-    final ref = FirebaseDatabase.instance
-        .ref()
-        .child('users')
-        .child(userId)
-        .child('workouts')
-        .child(dateStr);
-
-    final workout = {
-      'title': title,
-      'timestamp': ServerValue.timestamp,
-    };
-
-    ref.push().set(workout);
+  String _getDayOfWeek(DateTime date) {
+    return DateFormat('EEEE').format(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final sortedDates = _workouts.keys.toList()..sort((a, b) => b.compareTo(a));
-    final selectedDateStr = _selectedDay.toString().split(' ')[0];
-    final selectedWorkouts = _workouts[selectedDateStr] ?? [];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workout Schedule'),
+        title: Text('Schedule'),
         backgroundColor: Colors.red,
       ),
       body: Column(
         children: [
           TableCalendar(
-            firstDay: DateTime.utc(2024, 1, 1),
+            firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _selectedDay,
             calendarFormat: _calendarFormat,
+            eventLoader: _getEventsForDay,
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
@@ -162,86 +100,48 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 _calendarFormat = format;
               });
             },
-            eventLoader: (day) {
-              final dateStr = day.toString().split(' ')[0];
-              return _workouts[dateStr] ?? [];
-            },
           ),
+          Divider(thickness: 1),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Workouts for $selectedDateStr',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  'Recent Workouts',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
-            child: selectedWorkouts.isEmpty
-                ? Center(child: Text('No workouts scheduled for this day'))
-                : ListView.builder(
-                    itemCount: selectedWorkouts.length,
-                    itemBuilder: (context, index) {
-                      final workout = selectedWorkouts[index];
-                      return Dismissible(
-                        key: Key(workout.id),
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20.0),
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          _deleteWorkout(selectedDateStr, workout.id);
-                        },
-                        child: Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: ListTile(
-                            leading:
-                                Icon(Icons.fitness_center, color: Colors.red),
-                            title: Text(workout.title),
-                          ),
-                        ),
-                      );
-                    },
+            child: ListView.builder(
+              itemCount: _allWorkouts.length,
+              itemBuilder: (context, index) {
+                final workout = _allWorkouts[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 4.0,
                   ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddWorkoutDialog(context, _selectedDay),
-        backgroundColor: Colors.red,
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _showAddWorkoutDialog(BuildContext context, DateTime selectedDate) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Add Workout for ${selectedDate.toString().split(' ')[0]}'),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: 'Workout Title'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                _addWorkout(controller.text, selectedDate);
-                Navigator.pop(context);
-              }
-            },
-            child: Text('Add'),
+                  child: ListTile(
+                    title: Text(
+                      _getDayOfWeek(workout.dateTime),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${workout.date}\n${workout.title}',
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -253,10 +153,12 @@ class WorkoutEvent {
   final String id;
   final String title;
   final String date;
+  final DateTime dateTime;
 
   WorkoutEvent({
     required this.id,
     required this.title,
     required this.date,
+    required this.dateTime,
   });
 }
