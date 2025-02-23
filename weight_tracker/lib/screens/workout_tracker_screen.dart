@@ -12,11 +12,23 @@ class WorkoutTrackerScreen extends StatefulWidget {
 
 class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
   final _dateController = TextEditingController();
-  final _musclesController = TextEditingController();
   final _workoutController = TextEditingController();
   final _databaseRef = FirebaseDatabase.instance
       .ref("users/${FirebaseAuth.instance.currentUser!.uid}/workoutEntries");
   DateTime selectedDate = DateTime.now();
+
+  final List<String> muscleGroups = [
+    'Shoulders',
+    'Triceps',
+    'Biceps',
+    'Back',
+    'Legs',
+    'Chest',
+    'Abs',
+    'Cardio',
+    'None'
+  ];
+  List<String> selectedMuscles = [];
 
   List<Map<String, dynamic>> _workoutEntries = [];
 
@@ -69,18 +81,17 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
 
   void _addWorkoutEntry() async {
     final date = _dateController.text;
-    final muscles = _musclesController.text;
     final workout = _workoutController.text;
 
-    if (date.isNotEmpty && muscles.isNotEmpty && workout.isNotEmpty) {
+    if (date.isNotEmpty && selectedMuscles.isNotEmpty && workout.isNotEmpty) {
       await _databaseRef.push().set({
         "date": date,
-        "muscles": muscles,
+        "muscles": selectedMuscles.join(', '),
         "workout": workout,
       });
       _fetchWorkoutEntries();
       _dateController.clear();
-      _musclesController.clear();
+      selectedMuscles.clear();
       _workoutController.clear();
       Navigator.pop(context);
     }
@@ -115,7 +126,7 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
 
   Future<void> _editWorkoutEntry(Map<String, dynamic> entry) async {
     _dateController.text = entry['date'];
-    _musclesController.text = entry['muscles'];
+    selectedMuscles = entry['muscles'].split(', ').toList();
     _workoutController.text = entry['workout'];
     selectedDate = DateTime(
       int.parse(entry['date'].split('-')[2]), // Year
@@ -126,68 +137,73 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit Workout'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _dateController,
-                  decoration: InputDecoration(
-                    labelText: 'Select Date',
-                    hintText: 'MM-DD-YYYY',
-                    prefixIcon: Icon(Icons.calendar_today, color: Colors.red),
-                  ),
-                  readOnly: true,
-                  onTap: () => _selectDate(context),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Edit Workout'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _dateController,
+                      decoration: InputDecoration(
+                        labelText: 'Select Date',
+                        hintText: 'MM-DD-YYYY',
+                        prefixIcon:
+                            Icon(Icons.calendar_today, color: Colors.red),
+                      ),
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Muscles Worked',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    _buildMuscleCheckList(setState),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: _workoutController,
+                      decoration: InputDecoration(
+                        labelText: 'Workout Details',
+                        prefixIcon: Icon(Icons.description, color: Colors.red),
+                      ),
+                      maxLines: 5,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _musclesController,
-                  decoration: InputDecoration(
-                    labelText: 'Muscles Worked',
-                    prefixIcon: Icon(Icons.fitness_center, color: Colors.red),
-                  ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    selectedMuscles.clear();
+                    Navigator.pop(context);
+                  },
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _workoutController,
-                  decoration: InputDecoration(
-                    labelText: 'Workout Details',
-                    prefixIcon: Icon(Icons.description, color: Colors.red),
-                  ),
-                  maxLines: 5,
+                TextButton(
+                  onPressed: () async {
+                    await _databaseRef.child(entry['key']).update({
+                      "date": _dateController.text,
+                      "muscles": selectedMuscles.join(', '),
+                      "workout": _workoutController.text,
+                    });
+                    _fetchWorkoutEntries();
+                    _dateController.clear();
+                    selectedMuscles.clear();
+                    _workoutController.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Update'),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                _dateController.clear();
-                _musclesController.clear();
-                _workoutController.clear();
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              onPressed: () async {
-                await _databaseRef.child(entry['key']).update({
-                  "date": _dateController.text,
-                  "muscles": _musclesController.text,
-                  "workout": _workoutController.text,
-                });
-                _fetchWorkoutEntries();
-                _dateController.clear();
-                _musclesController.clear();
-                _workoutController.clear();
-                Navigator.pop(context);
-              },
-              child: Text('Update'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -209,56 +225,108 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     }
   }
 
+  Widget _buildMuscleCheckList(StateSetter dialogSetState) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.3,
+        minHeight: 100,
+      ),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: muscleGroups.map((muscle) {
+            return CheckboxListTile(
+              dense: true,
+              title: Text(muscle),
+              value: selectedMuscles.contains(muscle),
+              activeColor: Colors.red,
+              onChanged: (bool? value) {
+                dialogSetState(() {
+                  if (value == true) {
+                    if (muscle == 'None') {
+                      selectedMuscles.clear();
+                      selectedMuscles.add(muscle);
+                    } else {
+                      selectedMuscles.remove('None');
+                      selectedMuscles.add(muscle);
+                    }
+                  } else {
+                    selectedMuscles.remove(muscle);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   void _showAddWorkoutDialog() {
+    selectedMuscles.clear();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add Workout'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _dateController,
-                  decoration: InputDecoration(
-                    labelText: 'Select Date',
-                    hintText: 'MM-DD-YYYY',
-                    prefixIcon: Icon(Icons.calendar_today, color: Colors.red),
-                  ),
-                  readOnly: true,
-                  onTap: () => _selectDate(context),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add Workout'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _dateController,
+                      decoration: InputDecoration(
+                        labelText: 'Select Date',
+                        hintText: 'MM-DD-YYYY',
+                        prefixIcon:
+                            Icon(Icons.calendar_today, color: Colors.red),
+                      ),
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Muscles Worked',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    _buildMuscleCheckList(setState),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: _workoutController,
+                      decoration: InputDecoration(
+                        labelText: 'Workout Details',
+                        prefixIcon: Icon(Icons.description, color: Colors.red),
+                      ),
+                      maxLines: 5,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _musclesController,
-                  decoration: InputDecoration(
-                    labelText: 'Muscles Worked',
-                    prefixIcon: Icon(Icons.fitness_center, color: Colors.red),
-                  ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    selectedMuscles.clear();
+                    Navigator.pop(context);
+                  },
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _workoutController,
-                  decoration: InputDecoration(
-                    labelText: 'Workout Details',
-                    prefixIcon: Icon(Icons.description, color: Colors.red),
-                  ),
-                  maxLines: 5,
+                TextButton(
+                  onPressed: _addWorkoutEntry,
+                  child: Text('Add'),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () => Navigator.pop(context),
-            ),
-            TextButton(
-              onPressed: _addWorkoutEntry,
-              child: Text('Add'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
